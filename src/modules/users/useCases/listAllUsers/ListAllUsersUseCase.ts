@@ -8,8 +8,24 @@ interface IRequest {
 class ListAllUsersUseCase {
   constructor(private usersRepository: IUsersRepository) {}
 
+  private validateUserPermission({ user_id }: IRequest): boolean {
+    const user = this.usersRepository.findById(user_id);
+
+    if (user.admin) {
+      return true;
+    }
+
+    return false;
+  }
+
   execute({ user_id }: IRequest): User[] {
-    // Complete aqui
+    const userHasPermission = this.validateUserPermission({ user_id });
+
+    if (userHasPermission) {
+      return this.usersRepository.list();
+    }
+
+    return [];
   }
 }
 
